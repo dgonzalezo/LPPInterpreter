@@ -1,17 +1,17 @@
 /** Gramatica del Lenguaje LPP en ENBNF para ser procesado por ANTLR4 */
 grammar LPP;
 
-program: NL* registerDeclarations varDeclarations funProcDeclarations principalBlock;
+program:  registerDeclarations varDeclarations funProcDeclarations principalBlock;
 
 registerDeclarations: registerDeclaration*;
 
-registerDeclaration: REGISTRO ID NL+ varDeclarations FIN REGISTRO NL+;
+registerDeclaration: REGISTRO ID varDeclarations FIN REGISTRO ;
 
 funProcDeclarations: ( procDeclaration | funcDeclaration )*;
 
-funcDeclaration: FUNCION ID ( '(' parameters ')' )? ':' varType NL+ varDeclarations funcStmts;
+funcDeclaration: FUNCION ID ( '(' parameters ')' )? ':' varType varDeclarations funcStmts;
 
-procDeclaration: PROCEDIMIENTO ID ( '(' parameters ')' )? NL+ varDeclarations funcStmts;
+procDeclaration: PROCEDIMIENTO ID ( '(' parameters ')' )?  varDeclarations funcStmts;
 
 parameters: parameter ( ',' parameter )*;
 
@@ -19,7 +19,7 @@ parameter: VAR? varType ID;
 
 varDeclarations: varDeclaration*;
 
-varDeclaration: varType idList NL+;
+varDeclaration: varType idList ;
 
 idList: ID ( ',' ID )*;
 
@@ -34,9 +34,9 @@ varType
 
 integerList: TKN_INTEGER ( ',' TKN_INTEGER )*;
 
-funcStmts: INICIO NL+ stmts FIN NL+;
+funcStmts: INICIO  stmts FIN ;
 
-principalBlock: INICIO NL+ stmts FIN NL* EOF;
+principalBlock: INICIO  stmts FIN  EOF;
 
 stmts: stmt*;
 
@@ -52,24 +52,24 @@ stmt
     | repeatStmt
     | returnStmt;
 
-printStmt: ESCRIBA exprList NL+;
+printStmt: ESCRIBA exprList ;
 
-readStmt: LEA exprList NL+;
+readStmt: LEA exprList ;
 
-assignStmt: expr '<-' expr NL+;
+assignStmt: expr '<-' expr;
 
 callStmt
-     : LLAMAR NUEVA_LINEA ( '(' exprList? ')' )? NL+
-     | LLAMAR ID ( '(' exprList? ')' )? NL+ ;
+     : LLAMAR NUEVA_LINEA ( '(' exprList? ')' )?
+     | LLAMAR ID ( '(' exprList? ')' )? ;
 
 
-ifStmt: SI expr NL* ENTONCES NL+ stmts ifNot? FIN SI NL+;
+ifStmt: SI expr  ENTONCES  stmts ifNot? FIN SI;
 
-ifNot: SINO NL+ stmts;
+ifNot: SINO  stmts;
 
-caseStmt: CASO expr NL+ caseElement+ ifNotCase? FIN CASO NL+;
+caseStmt: CASO expr  caseElement+ ifNotCase? FIN CASO ;
 
-caseElement: listaExprOpcion ':' NL+ stmts;
+caseElement: listaExprOpcion ':' stmts;
 
 listaExprOpcion: exprOpcion ( ',' exprOpcion ) *;
 
@@ -77,15 +77,15 @@ exprOpcion: rangeExpr| expr;
 
 rangeExpr: expr '->' expr;
 
-ifNotCase: SINO ':' NL* stmts;
+ifNotCase: SINO ':'  stmts;
 
-whileStmt: MIENTRAS expr NL* HAGA NL+ stmts FIN MIENTRAS NL+;
+whileStmt: MIENTRAS expr  HAGA stmts FIN MIENTRAS;
 
-forStmt: PARA expr '<-' expr HASTA expr NL* HAGA NL+ stmts FIN PARA NL+;
+forStmt: PARA expr '<-' expr HASTA expr HAGA stmts FIN PARA;
 
-repeatStmt: REPITA NL+ stmts HASTA expr NL+;
+repeatStmt: REPITA  stmts HASTA expr;
 
-returnStmt: RETORNE expr NL+;
+returnStmt: RETORNE expr ;
 
 exprList: expr ( ',' expr )*;
 
@@ -209,7 +209,7 @@ fragment Z:('z'|'Z');
 
 ID : [a-zA-Z$_] [a-zA-Z0-9$_]* ;
 
-NL : [\r\n]+ ;
+NL : [\r\n]+ -> skip;
 WS : [ \t]+ -> skip ;
 COMMENT : '/*' .*? '*/' -> skip ;
 LINE_COMMENT : '//' ~[\r\n]* -> skip ;
