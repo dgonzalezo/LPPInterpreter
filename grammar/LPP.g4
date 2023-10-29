@@ -56,7 +56,7 @@ printStmt: ESCRIBA exprList ;
 
 readStmt: LEA exprList ;
 
-assignStmt: expr '<-' expr;
+assignStmt: expr TKN_ASSIGN expr;
 
 callStmt
      : LLAMAR NUEVA_LINEA ( '(' exprList? ')' )?
@@ -89,20 +89,25 @@ returnStmt: RETORNE expr ;
 
 exprList: expr ( ',' expr )*;
 
+
 expr
     : literal
-    | ID
-    | '(' expr ')'
-    | expr '.' ID
-    | expr '[' exprList ']'
-    | ID '(' exprList? ')'
     | TKN_MINUS expr
+    | ID
+    | TKN_OPENING_PAR expr TKN_CLOSING_PAR
+    | expr TKN_PERIOD ID
+    | expr TKN_OPENING_BRA exprList TKN_CLOSING_BRA
+    | ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR
     | <assoc=right> expr TKN_POWER expr
-    | expr ( TKN_TIMES | TKN_DIV | DIV | MOD ) expr
-    | expr ( TKN_PLUS | TKN_MINUS ) expr
-    | expr ( TKN_EQUAL | TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ ) expr
+    | expr ( MULOP ) expr
+    | expr ( ADOP ) expr
+    | expr ( COMOP ) expr
     | expr OP_Y expr
     | expr OP_O expr;
+
+MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
+ADOP: TKN_PLUS | TKN_MINUS;
+COMOP: TKN_PLUS | TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
 
 literal
     : TKN_REAL
@@ -112,6 +117,7 @@ literal
     | VERDADERO
     | FALSO
     ;
+
 
 // RESERVED WORDS
 INICIO : I N I C I O ;
@@ -164,6 +170,18 @@ TKN_GEQ : '>=' ;
 TKN_LEQ : '<=' ;
 OP_Y : Y ;
 OP_O : O ;
+
+
+// SOme other tokens
+
+TKN_OPENING_PAR: '(';
+TKN_CLOSING_PAR: ')';
+TKN_OPENING_BRA: '[';
+TKN_CLOSING_BRA: ']';
+TKN_COLON: ':';
+TKN_PERIOD: '.';
+TKN_COMMA: ',';
+TKN_ASSIGN: '<-';
 
 // LITERALS
 TKN_REAL : DIGIT+ '.' DIGIT* | '.' DIGIT+;
