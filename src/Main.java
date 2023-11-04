@@ -7,7 +7,7 @@ public class Main {
         LPPLexer lexer = new LPPLexer(CharStreams.fromFileName("input/exprTest.in"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LPPParser parser = new LPPParser(tokens);
-        ParseTree tree = parser.principalBlock();
+        ParseTree tree = parser.program();
         System.out.println(tree.toStringTree(parser));
         MyVisitor loader = new MyVisitor();
         loader.visit(tree);

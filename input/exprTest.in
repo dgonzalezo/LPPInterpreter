@@ -1,3 +1,9 @@
+cadena[10] nombre, apellido
+entero edad
 INICIO
-escriba 2<3, (3-2*1)<(10 mod 3), 2+9-3 mod 1, "Algo"
+    nombre <- "Cosme "
+    apellido <- "Fulanito "
+    edad <- 30+20
+    escriba nombre, " ",  apellido, " tiene una edad de ", edad
+
 FIN
