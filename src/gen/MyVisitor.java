@@ -20,6 +20,27 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
             return visitAssignStmt(ctx.assignStmt());
 
         }
+        else if (ctx.ifStmt() != null){
+            return visitIfStmt(ctx.ifStmt());
+        }
+        else if (ctx.repeatStmt() != null){
+            return visitRepeatStmt(ctx.repeatStmt());
+        }
+        return null;
+    }
+
+    @Override
+    public T visitIfStmt(LPPParser.IfStmtContext ctx){
+        String booleanString = (String) visitExpr(ctx.expr());
+        Boolean booleanValue = false;
+        if (booleanString.equalsIgnoreCase("verdadero")) {
+            booleanValue = true;
+        }
+
+        if (booleanValue){
+            visitStmts(ctx.stmts());
+        }
+
         return null;
     }
 
@@ -77,6 +98,19 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
     }
 
+    @Override
+
+    public T visitRepeatStmt(LPPParser.RepeatStmtContext ctx){
+
+
+        while (((String) visitExpr(ctx.expr())).equalsIgnoreCase("falso")){
+            visitStmts(ctx.stmts());
+        }
+
+        return null;
+
+    }
+
     //A Temporal visitPrintStmt to print exprs, and declared variables.
     @Override
     public T visitPrintStmt(LPPParser.PrintStmtContext ctx){
@@ -105,7 +139,11 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
         } else if(ctx.TKN_REAL()!= null){
             Double value = Double.parseDouble(ctx.TKN_REAL().getText());
             return (T) value;
-
+        } else if(ctx.VERDADERO()!= null){
+            //El interprete de LPP imprime verdadero, por lo que devuelvo el string por ahora
+            return (T) "verdadero";
+        } else if(ctx.FALSO() != null){
+            return (T) "falso";
         }
         return null;
     }
@@ -166,6 +204,9 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
             return (T) ans;
         }
         else if(ctx.COMOP()!=null){
+
+            //Las operaciones tambien deberian poder lidiear con booleanos, enteros, etc.
+
             String op = ctx.COMOP().getText();
             Double num1 = (Double) visitExpr(ctx.expr(0));
             Double num2 = (Double) visitExpr(ctx.expr(1));

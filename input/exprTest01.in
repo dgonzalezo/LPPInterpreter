@@ -1,6 +1,5 @@
 cadena[10] nombre, apellido
 entero edad
-real contador
 INICIO
     nombre <- "Cosme "
     apellido <- "Fulanito "
