@@ -26,6 +26,9 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
         else if (ctx.repeatStmt() != null){
             return visitRepeatStmt(ctx.repeatStmt());
         }
+        else if (ctx.forStmt()!= null){
+            return visitForStmt(ctx.forStmt());
+        }
         return null;
     }
 
@@ -109,6 +112,25 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
         return null;
 
+    }
+
+    public T visitForStmt(LPPParser.ForStmtContext ctx){
+        String identifier = (String) ctx.ID().getText();
+        Integer initial_value = (Integer) visitExpr(ctx.expr(0));
+        Integer limit = (Integer) visitExpr(ctx.expr(1));
+
+        if (varTable.get(identifier)==null){
+            System.out.println("Error, debe ser declarada");
+            return null;
+        }
+        varTable.put(identifier, initial_value);
+
+        for (int i = initial_value; i<limit; i++){
+            initial_value++;
+            visitStmts(ctx.stmts());
+            varTable.put(identifier, initial_value);
+        }
+        return null;
     }
 
     //A Temporal visitPrintStmt to print exprs, and declared variables.

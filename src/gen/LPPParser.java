@@ -2207,13 +2207,14 @@ public class LPPParser extends Parser {
 		public TerminalNode PARA(int i) {
 			return getToken(LPPParser.PARA, i);
 		}
+		public TerminalNode ID() { return getToken(LPPParser.ID, 0); }
+		public TerminalNode TKN_ASSIGN() { return getToken(LPPParser.TKN_ASSIGN, 0); }
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode TKN_ASSIGN() { return getToken(LPPParser.TKN_ASSIGN, 0); }
 		public TerminalNode HASTA() { return getToken(LPPParser.HASTA, 0); }
 		public TerminalNode HAGA() { return getToken(LPPParser.HAGA, 0); }
 		public StmtsContext stmts() {
@@ -2248,7 +2249,7 @@ public class LPPParser extends Parser {
 			setState(293);
 			match(PARA);
 			setState(294);
-			expr(0);
+			match(ID);
 			setState(295);
 			match(TKN_ASSIGN);
 			setState(296);
@@ -2977,7 +2978,7 @@ public class LPPParser extends Parser {
 		"\u0000\u011f\u0120\u0003D\"\u0000\u0120\u0121\u0005\u0015\u0000\u0000"+
 		"\u0121\u0122\u0003\u001e\u000f\u0000\u0122\u0123\u0005\u0006\u0000\u0000"+
 		"\u0123\u0124\u0005\u0014\u0000\u0000\u0124;\u0001\u0000\u0000\u0000\u0125"+
-		"\u0126\u0005\u0016\u0000\u0000\u0126\u0127\u0003D\"\u0000\u0127\u0128"+
+		"\u0126\u0005\u0016\u0000\u0000\u0126\u0127\u0005=\u0000\u0000\u0127\u0128"+
 		"\u00056\u0000\u0000\u0128\u0129\u0003D\"\u0000\u0129\u012a\u0005\t\u0000"+
 		"\u0000\u012a\u012b\u0003D\"\u0000\u012b\u012c\u0005\u0015\u0000\u0000"+
 		"\u012c\u012d\u0003\u001e\u000f\u0000\u012d\u012e\u0005\u0006\u0000\u0000"+

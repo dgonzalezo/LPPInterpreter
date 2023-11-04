@@ -15,10 +15,14 @@ INICIO
         fin si
     fin si
 
+    escriba "contador antes de repita", contador
+
     repita
         escriba contador
         contador <- contador+1
     hasta contador>10.0
+
+    escriba "contador ahora vale ", contador
 
 
 

@@ -81,7 +81,7 @@ ifNotCase: SINO ':'  stmts;
 
 whileStmt: MIENTRAS expr  HAGA stmts FIN MIENTRAS;
 
-forStmt: PARA expr '<-' expr HASTA expr HAGA stmts FIN PARA;
+forStmt: PARA ID '<-' expr HASTA expr HAGA stmts FIN PARA;
 
 repeatStmt: REPITA  stmts HASTA expr;
 

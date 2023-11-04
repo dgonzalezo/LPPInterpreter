@@ -1,6 +1,6 @@
 cadena[10] nombre, apellido
 entero edad
-real contador
+real contador, un_contador
 INICIO
     nombre <- "Cosme "
     apellido <- "Fulanito "
@@ -16,10 +16,18 @@ INICIO
         fin si
     fin si
 
-    repita
-        escriba contador
-        contador <- contador+1
-    hasta contador>10.0
+    escriba "contador antes de repita", contador
+
+        repita
+            escriba contador
+            contador <- contador+1
+        hasta contador>10.0
+
+    escriba "contador ahora vale ", contador
+
+    para un_contador <- 1 hasta 10 haga
+        Escriba un_contador, "ciclo"
+    Fin para
 
 
 
