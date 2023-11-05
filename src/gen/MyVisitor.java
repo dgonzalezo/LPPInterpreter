@@ -274,67 +274,79 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
             return (T) value;
 
         }
-        else if (ctx.MULOP()!=null){
-            String op = ctx.MULOP().getText().toLowerCase();
-            Double num1 = (Double) visitExpr(ctx.expr(0));
-            Double num2 = (Double) visitExpr(ctx.expr(1));
-            Double ans = null;
-            switch (op){
+        else if (ctx.MULOP() != null || ctx.ADOP() != null) {
+            String op = (ctx.MULOP() != null) ? ctx.MULOP().getText().toLowerCase() : ctx.ADOP().getText();
+            Number num1 = (Number) visitExpr(ctx.expr(0));
+            Number num2 = (Number) visitExpr(ctx.expr(1));
+            Number ans = null;
+
+            switch (op) {
                 case "*":
-                    ans = num1 * num2;
+                    ans = num1.doubleValue() * num2.doubleValue();
                     break;
                 case "/":
-                    ans = num1 / num2;
+                    ans = num1.doubleValue() / num2.doubleValue();
                     break;
                 case "mod":
-                    ans = num1%num2;
+                    ans = num1.intValue() % num2.intValue();
                     break;
                 case "div":
-                    ans = num1 / num2;
+                    ans = num1.intValue() / num2.intValue();
                     break;
-            }
-            return (T) ans;
-        }
-        else if (ctx.ADOP()!=null){
-            String op = ctx.ADOP().getText();
-            Double num1 = Double.parseDouble(visitExpr(ctx.expr(0)).toString());
-            Double num2 = Double.parseDouble(visitExpr(ctx.expr(1)).toString());
-            Double ans = null;
-            switch (op){
                 case "+":
-                    ans = num1 + num2;
+                    if (num1 instanceof Double || num2 instanceof Double) {
+                        ans = num1.doubleValue() + num2.doubleValue();
+                    } else {
+                        ans = num1.intValue() + num2.intValue();
+                    }
                     break;
                 case "-":
-                    ans = num1 - num2;
+                    if (num1 instanceof Double && num2 instanceof Double) {
+                        ans = num1.doubleValue() - num2.doubleValue();
+                    } else {
+                        ans = num1.intValue() - num2.intValue();
+                    }
                     break;
             }
+
+            if (num1 instanceof Integer || num2 instanceof Integer) {
+                ans = ans.intValue();
+            }
+
+            return (T) ans;
+        }
+        else if (ctx.COMOP() != null) {
+            String op = ctx.COMOP().getText();
+            Number num1 = (Number) visitExpr(ctx.expr(0));
+            Number num2 = (Number) visitExpr(ctx.expr(1));
+            String ans = null;
+
+            switch (op) {
+                case "=":
+                    ans = (num1.doubleValue() == num2.doubleValue() ? "VERDADERO" : "FALSO");
+                    break;
+                case "<":
+                    ans = (num1.doubleValue() < num2.doubleValue() ? "VERDADERO" : "FALSO");
+                    break;
+                case ">":
+                    ans = (num1.doubleValue() > num2.doubleValue() ? "VERDADERO" : "FALSO");
+                    break;
+                case ">=":
+                    ans = (num1.doubleValue() >= num2.doubleValue() ? "VERDADERO" : "FALSO");
+                    break;
+                case "<=":
+                    ans = (num1.doubleValue() <= num2.doubleValue() ? "VERDADERO" : "FALSO");
+                    break;
+                case "<>":
+                    ans = (num1.doubleValue() != num2.doubleValue() ? "VERDADERO" : "FALSO");
+                    break;
+            }
+
             return (T) ans;
         }
 
-        else if(ctx.COMOP()!=null){
-
-            String op = ctx.COMOP().getText();
-            Double num1 = (Double) visitExpr(ctx.expr(0));
-            Double num2 = (Double) visitExpr(ctx.expr(1));
-            switch (op){
-                case "=":
-                    return (T) (num1 == num2 ? "VERDADERO" : "FALSO");
-                case "<":
-                    return (T) (num1 < num2 ? "VERDADERO" : "FALSO");
-                case ">":
-                    return (T) (num1 > num2 ? "VERDADERO" : "FALSO");
-                case ">=":
-                    return (T) (num1 >= num2 ? "VERDADERO" : "FALSO");
-                case "<=":
-                    return (T) (num1 <= num2 ? "VERDADERO": "FALSO");
-                case "<>":
-                    return (T) (num1 != num2 ? "VERDADERO" : "FALSO");
-            }
-        }
-
-        else if(ctx.BOLOP()!=null){
-
-            String op = (String) ctx.BOLOP().getText();
+        else if (ctx.BOLOP() != null) {
+            String op = ctx.BOLOP().getText();
             String value1 = (String) visitExpr(ctx.expr(0));
             String value2 = (String) visitExpr(ctx.expr(1));
             boolean result;
@@ -342,7 +354,7 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
             boolean bValue1 = getBooleanValue(value1);
             boolean bValue2 = getBooleanValue(value2);
 
-            if (op.equalsIgnoreCase("o")){
+            if (op.equalsIgnoreCase("o")) {
                 result = (bValue1 || bValue2);
             } else {
                 result = (bValue1 && bValue2);
@@ -350,6 +362,7 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
             return (T) getBooleanString(result);
         }
+
         return null;
     }
 

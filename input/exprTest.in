@@ -1,3 +1,35 @@
+entero acumulador
+entero i
 inicio
-    escriba (2.0<3.0) y (5.0<4.0)
+ i<-0
+ acumulador<-0
+ repita
+ escriba ("Valor del acumulador en la iteracion: "),(acumulador)
+        llamar nueva_linea
+        i<-i+1
+        acumulador<-acumulador+(i*2)
+ hasta (i=20) o (acumulador mod 5=4)
+/*
+Valor del acumulador en la iteracion: 0
+Valor del acumulador en la iteracion: 2
+Valor del acumulador en la iteracion: 6
+Valor del acumulador en la iteracion: 12
+Valor del acumulador en la iteracion: 20
+Valor del acumulador en la iteracion: 30
+Valor del acumulador en la iteracion: 42
+Valor del acumulador en la iteracion: 56
+Valor del acumulador en la iteracion: 72
+Valor del acumulador en la iteracion: 90
+Valor del acumulador en la iteracion: 110
+Valor del acumulador en la iteracion: 132
+Valor del acumulador en la iteracion: 156
+Valor del acumulador en la iteracion: 182
+Valor del acumulador en la iteracion: 210
+Valor del acumulador en la iteracion: 240
+Valor del acumulador en la iteracion: 272
+Valor del acumulador en la iteracion: 306
+Valor del acumulador en la iteracion: 342
+Valor del acumulador en la iteracion: 380
+*/
 fin
+
