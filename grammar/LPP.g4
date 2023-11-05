@@ -62,7 +62,6 @@ callStmt
      : LLAMAR NUEVA_LINEA ( '(' exprList? ')' )?
      | LLAMAR ID ( '(' exprList? ')' )? ;
 
-
 ifStmt: SI expr  ENTONCES  stmts ifNot? FIN SI;
 
 ifNot: SINO  stmts;
@@ -102,12 +101,12 @@ expr
     | expr ( MULOP ) expr
     | expr ( ADOP ) expr
     | expr ( COMOP ) expr
-    | expr OP_Y expr
-    | expr OP_O expr;
+    | expr ( BOLOP ) expr;
 
 MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
 ADOP: TKN_PLUS | TKN_MINUS;
 COMOP: TKN_PLUS | TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
+BOLOP: OP_Y | OP_O;
 
 literal
     : TKN_REAL

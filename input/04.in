@@ -7,7 +7,7 @@ fin registro
 
 
 registro subject
-   cadena[10] name
+   cadena[10] naflme
    entero credits
    calendar horario
 fin registro

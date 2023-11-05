@@ -1,14 +1,67 @@
+import org.antlr.v4.runtime.misc.Pair;
+
 import java.sql.Array;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import java.util.Scanner;
 public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
+    // Helper functions
+
+    boolean getBooleanValue(String booleanString){
+        return booleanString.equalsIgnoreCase("verdadero");
+    }
+
+    String getBooleanString(boolean booleanString){
+        if (booleanString){
+            return "VERDADERO";
+        } else {
+            return "FALSO";
+        }
+    }
 
     // We probably should store the type too, but idk right now how to do it.
-
     HashMap<String, Object> varTable = new HashMap<>();
 
+    HashMap<String, ArrayList<Pair<String, String>>> registerTable = new HashMap<>();
+
+    // Register related visitors.
+
+    /*
+    @Override
+    public T visitRegisterDeclarations(LPPParser.RegisterDeclarationsContext ctx){
+        if (ctx.registerDeclaration() !=null){
+            return visitRegisterDeclaration(ctx.registerDeclaration(0));
+        } else {
+            return null;
+        }
+
+    }
+
+    @Override
+    public T visitRegisterDeclaration(LPPParser.RegisterDeclarationContext ctx){
+
+        String registerName = ctx.ID().getText();
+        ArrayList<Pair<String, String>> attributes = new ArrayList<>();
+
+        for (int i = 0; i<ctx.varDeclarations().children.size(); i++){
+
+            String varType = ctx.varDeclarations().varDeclaration(i).varType().getText();
+            ArrayList<String> variables = (ArrayList<String>) visitIdList(ctx.varDeclarations().varDeclaration(i).idList());
+            for (String variable : variables){
+                attributes.add(new Pair<>(varType, variable));
+            }
+        }
+
+        registerTable.put(registerName, attributes);
+        System.out.println(registerTable.get(registerName).get(0));
+
+        return null;
+    }
+
+    */
+    // Stmt related visitors
 
     @Override
     public T visitStmt(LPPParser.StmtContext ctx){
@@ -29,6 +82,9 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
         else if (ctx.forStmt()!= null){
             return visitForStmt(ctx.forStmt());
         }
+        else if (ctx.whileStmt()!= null){
+            return visitWhileStmt(ctx.whileStmt());
+        }
         return null;
     }
 
@@ -46,44 +102,17 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
         return null;
     }
-
-
     @Override
-    public T visitVarDeclarations(LPPParser.VarDeclarationsContext ctx){
+    public T visitWhileStmt(LPPParser.WhileStmtContext ctx){
 
-        for (int i=0; i<ctx.varDeclaration().size(); i++) {
-            String varType = ctx.varDeclaration(i).varType().getText().toLowerCase();
-            ArrayList<String> idList = (ArrayList<String>) visitIdList(ctx.varDeclaration(i).idList());
 
-            // Ooriginalmente pensaba hacer un switch, pero es un lio el tema de cadenas y arreglos
-            for (String variable : idList) {
-                if (varType.equals("entero")) {
-                    varTable.put(variable, 0);
-                } else if (varType.startsWith("real")){
-                    varTable.put(variable, 0.0);
-                } else if (varType.startsWith("cadena")) {
-                    //Quizas toque hacer que la cadena no sea mayor a un tamano...
-                    varTable.put(variable, "");
-                } else {
-                    varTable.put(variable, new Object());
-                }
-            }
-
+        while (((String) visitExpr(ctx.expr())).equalsIgnoreCase("verdadero")){
+            visitStmts(ctx.stmts());
         }
         return null;
+
     }
 
-    @Override
-    public T visitIdList(LPPParser.IdListContext ctx){
-
-        ArrayList<String> idList = new ArrayList<String>();
-        if (ctx.ID()!=null){
-            for (int i=0; i<ctx.ID().size();i++){
-                idList.add(ctx.ID(i).getText());
-            }
-        }
-        return (T) idList;
-    }
 
     @Override
     public T visitAssignStmt(LPPParser.AssignStmtContext ctx){
@@ -99,6 +128,25 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
         return null;
 
+    }
+
+    @Override
+    public T visitReadStmt(LPPParser.ReadStmtContext ctx){
+
+        // The expression list must be a list of variables
+        // The read Stmt assign a value to some variable, array, etc.
+        // So we probably just need to read the value, and visit the assign with some contedxt idk
+
+
+        // For that we get the list of variables to read first
+
+        String exprList = ctx.exprList().expr(0).getText();
+        Scanner scanner = new Scanner(System.in);
+        String value = scanner.nextLine();
+
+        scanner.close();
+
+        return null;
     }
 
     @Override
@@ -143,9 +191,49 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
                 Object ans = visitExpr(ctx.exprList().expr(i));
                 System.out.print(ans);
             }
-       }
+        }
 
         return null;
+    }
+
+
+    @Override
+    public T visitVarDeclarations(LPPParser.VarDeclarationsContext ctx){
+
+        for (int i=0; i<ctx.varDeclaration().size(); i++) {
+            String varType = ctx.varDeclaration(i).varType().getText().toLowerCase();
+            ArrayList<String> idList = (ArrayList<String>) visitIdList(ctx.varDeclaration(i).idList());
+
+            // Ooriginalmente pensaba hacer un switch, pero es un lio el tema de cadenas y arreglos
+            for (String variable : idList) {
+                if (varType.equals("entero")) {
+                    varTable.put(variable, 0);
+                } else if (varType.startsWith("real")){
+                    varTable.put(variable, 0.0);
+                } else if (varType.startsWith("cadena")) {
+                    //Quizas toque hacer que la cadena no sea mayor a un tamano...
+                    varTable.put(variable, "");
+                }
+                //If its a register then
+                else {
+                    varTable.put(variable, new Object());
+                }
+            }
+
+        }
+        return null;
+    }
+
+    @Override
+    public T visitIdList(LPPParser.IdListContext ctx){
+
+        ArrayList<String> idList = new ArrayList<String>();
+        if (ctx.ID()!=null){
+            for (int i=0; i<ctx.ID().size();i++){
+                idList.add(ctx.ID(i).getText());
+            }
+        }
+        return (T) idList;
     }
 
 
@@ -180,9 +268,6 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
             return visitExpr(ctx.expr(0));
         }
         else if (ctx.ID() != null){
-
-            //La mas deificil, aqui toca quizas ahcer la logica sobre como lalmar las funciones, los arreglos y las ids no mas.
-            //Por ahora solo llamo el valor de una ID
 
             String id = ctx.ID().getText();
             Object value = varTable.get(id);
@@ -225,9 +310,8 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
             }
             return (T) ans;
         }
-        else if(ctx.COMOP()!=null){
 
-            //Las operaciones tambien deberian poder lidiear con booleanos, enteros, etc.
+        else if(ctx.COMOP()!=null){
 
             String op = ctx.COMOP().getText();
             Double num1 = (Double) visitExpr(ctx.expr(0));
@@ -246,6 +330,25 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
                 case "<>":
                     return (T) (num1 != num2 ? "VERDADERO" : "FALSO");
             }
+        }
+
+        else if(ctx.BOLOP()!=null){
+
+            String op = (String) ctx.BOLOP().getText();
+            String value1 = (String) visitExpr(ctx.expr(0));
+            String value2 = (String) visitExpr(ctx.expr(1));
+            boolean result;
+
+            boolean bValue1 = getBooleanValue(value1);
+            boolean bValue2 = getBooleanValue(value2);
+
+            if (op.equalsIgnoreCase("o")){
+                result = (bValue1 || bValue2);
+            } else {
+                result = (bValue1 && bValue2);
+            }
+
+            return (T) getBooleanString(result);
         }
         return null;
     }

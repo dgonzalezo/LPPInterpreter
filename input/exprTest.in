@@ -1,34 +1,3 @@
-cadena[10] nombre, apellido
-entero edad
-real contador, un_contador
-INICIO
-    nombre <- "Cosme "
-    apellido <- "Fulanito "
-    edad <- 30+20
-    escriba nombre, " ",  apellido, " tiene una edad de ", edad
-
-    //Solo funcionan doubles por ahora :(
-
-    si (2.0<3.0) entonces
-        escriba nombre
-        si verdadero entonces
-            escriba "ES VERDADOERO!!!!!!!"
-        fin si
-    fin si
-
-    escriba "contador antes de repita", contador
-
-        repita
-            escriba contador
-            contador <- contador+1
-        hasta contador>10.0
-
-    escriba "contador ahora vale ", contador
-
-    para un_contador <- 1 hasta 10 haga
-        Escriba un_contador, "ciclo"
-    Fin para
-
-
-
-FIN
+inicio
+    escriba (2.0<3.0) y (5.0<4.0)
+fin
