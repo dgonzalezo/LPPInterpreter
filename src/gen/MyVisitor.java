@@ -21,10 +21,21 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
         }
     }
 
-    // We probably should store the type too, but idk right now how to do it.
+    // We encapsulate the dictionary NameOfVariable: (Type, value)
     HashMap<String, Object> varTable = new HashMap<>();
-
     HashMap<String, ArrayList<Pair<String, String>>> registerTable = new HashMap<>();
+
+
+    class FunctionInfo {
+        String returnType;
+        ArrayList<Pair<String, String>> parameters;
+        LPPParser.FuncStmtsContext stmts;
+
+    }
+
+    HashMap<String, FunctionInfo> functionTable = new HashMap<>();
+
+
 
     // Register related visitors.
 
@@ -61,6 +72,29 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
     }
 
     */
+
+    // Functions related visitors
+
+    @Override
+    public T visitFuncDeclaration(LPPParser.FuncDeclarationContext ctx) {
+
+        return null;
+    }
+
+    public T visitParameters(LPPParser.ParametersContext ctx){
+        ArrayList<Pair<String, String>> parameterList = new ArrayList<>();
+        if (ctx.parameter()!=null){
+            for(int i =0; i<ctx.parameter().size(); i++){
+                String paramType = ctx.parameter(i).varType().getText();
+                String paramName = ctx.parameter(i).ID().getText();
+
+                Pair<String, String> parameter = new Pair<>(paramType, paramName);
+                parameterList.add(parameter);
+            }
+        }
+        return (T) parameterList;
+    }
+
     // Stmt related visitors
 
     @Override
@@ -68,10 +102,8 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
         if (ctx.printStmt() != null){
             return visitPrintStmt(ctx.printStmt());
         }
-
         else if (ctx.assignStmt() != null){
             return visitAssignStmt(ctx.assignStmt());
-
         }
         else if (ctx.ifStmt() != null){
             return visitIfStmt(ctx.ifStmt());
@@ -84,6 +116,9 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
         }
         else if (ctx.whileStmt()!= null){
             return visitWhileStmt(ctx.whileStmt());
+        }
+        else if (ctx.callStmt() != null){
+            return visitCallStmt(ctx.callStmt());
         }
         return null;
     }
@@ -104,7 +139,6 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
     }
     @Override
     public T visitWhileStmt(LPPParser.WhileStmtContext ctx){
-
 
         while (((String) visitExpr(ctx.expr())).equalsIgnoreCase("verdadero")){
             visitStmts(ctx.stmts());
@@ -150,7 +184,13 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
     }
 
     @Override
-
+    public T visitCallStmt(LPPParser.CallStmtContext ctx){
+        if (ctx.NUEVA_LINEA()!=null){
+            System.out.println("");
+        }
+        return null;
+    }
+    @Override
     public T visitRepeatStmt(LPPParser.RepeatStmtContext ctx){
 
 
@@ -260,7 +300,10 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
     @Override
     public T visitExpr(LPPParser.ExprContext ctx) {
 
-        if (ctx.literal() != null) {
+        if (ctx.funCall()!=null){
+            return visitFunCall(ctx.funCall());
+        }
+        else if (ctx.literal() != null) {
             return visitLiteral(ctx.literal());
         }
 
@@ -365,5 +408,36 @@ public class MyVisitor<T> extends LPPBaseVisitor<T>{
 
         return null;
     }
+    @Override
+    public T visitFunCall(LPPParser.FunCallContext ctx) {
+        String functionName = ctx.ID().getText();
+
+        if (functionTable.containsKey(functionName)) {
+            FunctionInfo functionInfo = functionTable.get(functionName);
+
+            // Create a new local scope for function parameters
+            HashMap<String, Object> localScope = new HashMap<>();
+            ArrayList<Pair<String, String>> parameters = functionInfo.parameters;
+
+            if (ctx.exprList() != null) {
+                for (int i = 0; i < parameters.size() && i < ctx.exprList().expr().size(); i++) {
+                    String paramName = parameters.get(i).b;
+                    Object argValue = visitExpr(ctx.exprList().expr(i));
+                    localScope.put(paramName, argValue);
+                }
+            }
+
+            // Execute the function's statement block in the new scope
+            MyVisitor<T> functionVisitor = new MyVisitor<>();
+            functionVisitor.varTable = localScope; // Set local scope
+            functionVisitor.visitFuncStmts(functionInfo.stmts);
+        } else {
+            System.out.println("Error: Function " + functionName + " not defined.");
+        }
+
+        return null;
+    }
+
+
 
 }

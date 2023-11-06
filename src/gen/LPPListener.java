@@ -357,6 +357,26 @@ public interface LPPListener extends ParseTreeListener {
 	 */
 	void exitExpr(LPPParser.ExprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link LPPParser#funCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunCall(LPPParser.FunCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPPParser#funCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunCall(LPPParser.FunCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPPParser#arrayCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayCall(LPPParser.ArrayCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPPParser#arrayCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayCall(LPPParser.ArrayCallContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link LPPParser#literal}.
 	 * @param ctx the parse tree
 	 */

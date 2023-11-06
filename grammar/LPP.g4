@@ -9,9 +9,9 @@ registerDeclaration: REGISTRO ID varDeclarations FIN REGISTRO ;
 
 funProcDeclarations: ( procDeclaration | funcDeclaration )*;
 
-funcDeclaration: FUNCION ID ( '(' parameters ')' )? ':' varType varDeclarations funcStmts;
+funcDeclaration: FUNCION ID ( '(' parameters ')' )? ':' varType varDeclarations INICIO funcStmts FIN;
 
-procDeclaration: PROCEDIMIENTO ID ( '(' parameters ')' )?  varDeclarations funcStmts;
+procDeclaration: PROCEDIMIENTO ID ( '(' parameters ')' )?  varDeclarations INICIO stmts FIN;
 
 parameters: parameter ( ',' parameter )*;
 
@@ -34,7 +34,7 @@ varType
 
 integerList: TKN_INTEGER ( ',' TKN_INTEGER )*;
 
-funcStmts: INICIO  stmts FIN ;
+funcStmts: stmts | returnStmt;
 
 principalBlock: INICIO  stmts FIN  EOF;
 
@@ -49,8 +49,7 @@ stmt
     | caseStmt
     | whileStmt
     | forStmt
-    | repeatStmt
-    | returnStmt;
+    | repeatStmt;
 
 printStmt: ESCRIBA exprList ;
 
@@ -84,7 +83,7 @@ forStmt: PARA ID '<-' expr HASTA expr HAGA stmts FIN PARA;
 
 repeatStmt: REPITA  stmts HASTA expr;
 
-returnStmt: RETORNE expr ;
+returnStmt: RETORNE expr;
 
 exprList: expr ( ',' expr )*;
 
@@ -95,14 +94,16 @@ expr
     | ID
     | TKN_OPENING_PAR expr TKN_CLOSING_PAR
     | expr TKN_PERIOD ID
-    | expr TKN_OPENING_BRA exprList TKN_CLOSING_BRA
-    | ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR
+    | funCall
+    | arrayCall
     | <assoc=right> expr TKN_POWER expr
     | expr ( MULOP ) expr
     | expr ( ADOP ) expr
     | expr ( COMOP ) expr
     | expr ( BOLOP ) expr;
 
+funCall: ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR ;
+arrayCall: ID TKN_OPENING_BRA exprList TKN_CLOSING_BRA;
 MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
 ADOP: TKN_PLUS | TKN_MINUS;
 COMOP: TKN_PLUS | TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;

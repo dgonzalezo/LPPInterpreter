@@ -18,4 +18,6 @@ inicio
   evaluates <- factorial_recursive(factorial_recursive(3))
   escriba evaluates
 
+  //Output: 720
+
 fin

@@ -220,6 +220,18 @@ public interface LPPVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpr(LPPParser.ExprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LPPParser#funCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunCall(LPPParser.FunCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPPParser#arrayCall}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayCall(LPPParser.ArrayCallContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LPPParser#literal}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
