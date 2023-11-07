@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.tree.*;
 public class Main {
 
     public static void main(String [] args) throws Exception{
-        LPPLexer lexer = new LPPLexer(CharStreams.fromFileName("input/02.in"));
+        LPPLexer lexer = new LPPLexer(CharStreams.fromFileName("input/test.in"));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LPPParser parser = new LPPParser(tokens);
         ParseTree tree = parser.program();

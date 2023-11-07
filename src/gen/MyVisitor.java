@@ -3,6 +3,7 @@ import org.antlr.v4.runtime.misc.Pair;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class MyVisitor extends LPPBaseVisitor<Value> {
@@ -287,104 +288,96 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
 
         } else if (ctx.MULOP() != null) {
             String op = ctx.MULOP().getText().toLowerCase();
-            Value num1 = visitExpr(ctx.expr(0));
-            Value num2 = visitExpr(ctx.expr(1));
-            Value ans = null;
-            if (num1.isEntero()) {
-                switch (op) {
-                    case "*":
-                        ans = new Value(num1.asEntero() * num2.asEntero());
-                        break;
-                    case "/":
-                        ans = new Value(num1.asEntero() / num2.asEntero());
-                        break;
-                    case "mod":
-                        ans = new Value(num1.asEntero() % num2.asEntero());
-                        break;
-                    case "div":
-                        ans = new Value(num1.asEntero() / num2.asEntero());
-                        break;
 
-                }
-            } else if (num1.isReal()) {
-                switch (op) {
-                    case "*":
-                        ans = new Value(num1.asReal() * num2.asReal());
-                        break;
-                    case "/":
-                        ans = new Value(num1.asReal() / num2.asReal());
-                        break;
-                    case "mod":
-                        ans = new Value(num1.asReal() % num2.asReal());
-                        break;
-                    case "div":
-                        ans = new Value(num1.asReal() / num2.asReal());
-                        break;
+            Value value1 = visitExpr(ctx.expr(0));
+            Value value2 = visitExpr(ctx.expr(1));
 
-                }
+            Number num1 = value1.asReal();
+            Number num2 = value2.asReal();
 
+            Number ans = null;
+            Value ansValue;
+
+            switch (op) {
+                case "*":
+                    ans = num1.doubleValue() * num2.doubleValue();
+                    break;
+                case "/":
+                    ans = num1.doubleValue() / num2.doubleValue();
+                    break;
+                case "mod":
+                    ans = num1.intValue() % num2.intValue();
+                    break;
+                case "div":
+                    ans = num1.intValue() / num2.intValue();
+                    break;
             }
 
-//            if (num1 instanceof Integer || num2 instanceof Integer) {
-//                ans = ans.intValue();
-//            }
+            if (value1.isEntero() &&  value2.isEntero()) {
+                ans = ans.intValue();
+            }
+            ansValue = new Value(ans);
+            return ansValue;
 
-            return ans;
         } else if (ctx.lEx != null && (ctx.TKN_MINUS() != null || ctx.TKN_PLUS() != null)) {
             String op = ctx.TKN_PLUS() != null ? ctx.TKN_PLUS().toString() : ctx.TKN_MINUS().toString();
-            Value num1 = visitExpr(ctx.lEx);
-            Value num2 = visitExpr(ctx.rEx);
-            Value ans = null;
-            if (num1.isEntero()) {
-                switch (op) {
-                    case "+":
-                        ans = new Value(num1.asEntero() + num2.asEntero());
-                        break;
-                    case "-":
-                        ans = new Value(num1.asEntero() - num2.asEntero());
-                        break;
-                }
-            } else if (num1.isReal()) {
-                switch (op) {
-                    case "+":
-                        ans = new Value(num1.asReal() + num2.asReal());
-                        break;
-                    case "-":
+            Value value1 = visitExpr(ctx.lEx);
+            Value value2 = visitExpr(ctx.rEx);
 
-                        ans = new Value(num1.asReal() - num2.asReal());
-                        break;
-                }
+            Number num1 = value1.asReal();
+            Number num2 = value2.asReal();
+
+            Number ans = null;
+            Value ansValue;
+
+            switch (op) {
+                case "+":
+                    ans = num1.doubleValue() + num2.doubleValue();
+                    break;
+                case "-":
+                    ans = num1.doubleValue() - num2.doubleValue();
+                    break;
             }
-            return ans;
+
+            if (value1.isEntero() &&  value2.isEntero()) {
+                ans = ans.intValue();
+            }
+            ansValue = new Value(ans);
+            return ansValue;
+
         } else if (ctx.COMOP() != null) {
             String op = ctx.COMOP().getText();
-            Value num1 = visitExpr(ctx.expr(0));
-            Value num2 = visitExpr(ctx.expr(1));
-            Value ans = null;
+            Value value1 = visitExpr(ctx.expr(0));
+            Value value2 = visitExpr(ctx.expr(1));
+
+            Float num1 = value1.asReal();
+            Float num2 = value2.asReal();
+
+            Boolean ans = null;
+            Value ansValue;
 
             switch (op) {
                 case "=":
-
-                    ans = new Value(num1.value == num2.value);
+                    ans = Objects.equals(num1, num2);
                     break;
                 case "<":
-                    ans = new Value(num1.menorQue(num2));
+                    ans = num1 < num2 ;
                     break;
                 case ">":
-                    ans = new Value(num1.mayorQue(num2));
+                    ans = num1 > num2;
                     break;
                 case ">=":
-                    ans = new Value(num1.mayorIgualQue(num2));
+                    ans = num1 >= num2;
                     break;
                 case "<=":
-                    ans = new Value(num1.menorIgualQue(num2));
+                    ans = num1 <= num2;
                     break;
                 case "<>":
-                    ans = new Value(num1 != num2);
+                    ans = !Objects.equals(num1, num2);
                     break;
             }
-
-            return ans;
+            ansValue = new Value(ans);
+            return ansValue;
         } else if (ctx.BOLOP() != null) {
             String op = ctx.BOLOP().getText();
             Value value1 = visitExpr(ctx.expr(0));

@@ -12,11 +12,13 @@ public class Value {
     }
 
     public Integer asEntero() {
-        return (Integer) value;
+        Number numberValue = (Number) value;
+        return numberValue.intValue();
     }
 
     public Float asReal() {
-        return (Float) value;
+        Number numberValue = (Number) value;
+        return numberValue.floatValue();
     }
 
     public Character asCaracter() {
@@ -75,10 +77,10 @@ public class Value {
         return this.value.hashCode();
     }
     public Boolean menorQue(Value other) {
-        System.out.println(other.value.getClass());
+        /*System.out.println(other.value.getClass());
         if (this.value.getClass() != other.value.getClass()) {
             throw new UnsupportedOperationException("No se pueden comparar valores de tipos diferentes.");
-        }
+        }*/
 
         if (isEntero()) {
             return asEntero() < other.asEntero();
