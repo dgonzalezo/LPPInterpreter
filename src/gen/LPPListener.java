@@ -1,4 +1,4 @@
-// Generated from C:/Users/xabel/IdeaProjects/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+// Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -116,6 +116,16 @@ public interface LPPListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIdList(LPPParser.IdListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPPParser#identifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdentifier(LPPParser.IdentifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPPParser#identifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdentifier(LPPParser.IdentifierContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LPPParser#varType}.
 	 * @param ctx the parse tree
@@ -347,16 +357,6 @@ public interface LPPListener extends ParseTreeListener {
 	 */
 	void exitExprList(LPPParser.ExprListContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link LPPParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpr(LPPParser.ExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link LPPParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpr(LPPParser.ExprContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link LPPParser#funCall}.
 	 * @param ctx the parse tree
 	 */
@@ -376,6 +376,16 @@ public interface LPPListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArrayCall(LPPParser.ArrayCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPPParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr(LPPParser.ExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPPParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr(LPPParser.ExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LPPParser#literal}.
 	 * @param ctx the parse tree

@@ -1,0 +1,17 @@
+// Triángulo de Pascal
+
+entero rows
+entero coef
+entero space
+entero i
+entero j
+
+inicio
+   rows <- 8
+
+   para i <- 0 hasta rows+1 haga
+       escriba i
+       llamar nueva_linea
+    fin para
+
+fin

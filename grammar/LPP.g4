@@ -21,7 +21,8 @@ varDeclarations: varDeclaration*;
 
 varDeclaration: varType idList ;
 
-idList: ID ( ',' ID )*;
+idList: identifier ( ',' identifier )*;
+identifier: ID;
 
 varType
     : ENTERO
@@ -34,7 +35,7 @@ varType
 
 integerList: TKN_INTEGER ( ',' TKN_INTEGER )*;
 
-funcStmts: stmts | returnStmt;
+funcStmts: stmts;
 
 principalBlock: INICIO  stmts FIN  EOF;
 
@@ -49,7 +50,8 @@ stmt
     | caseStmt
     | whileStmt
     | forStmt
-    | repeatStmt;
+    | repeatStmt
+    | returnStmt;
 
 printStmt: ESCRIBA exprList ;
 
@@ -87,6 +89,14 @@ returnStmt: RETORNE expr;
 
 exprList: expr ( ',' expr )*;
 
+TKN_MINUS : '-' ;
+
+funCall: ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR ;
+arrayCall: ID TKN_OPENING_BRA exprList TKN_CLOSING_BRA;
+MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
+
+COMOP: TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
+BOLOP: OP_Y | OP_O;
 
 expr
     : literal
@@ -94,20 +104,14 @@ expr
     | ID
     | TKN_OPENING_PAR expr TKN_CLOSING_PAR
     | expr TKN_PERIOD ID
-    | funCall
-    | arrayCall
     | <assoc=right> expr TKN_POWER expr
     | expr ( MULOP ) expr
-    | expr ( ADOP ) expr
+    | lEx=expr op=( TKN_PLUS | TKN_MINUS ) rEx=expr
     | expr ( COMOP ) expr
-    | expr ( BOLOP ) expr;
+    | expr ( BOLOP ) expr
+    | funCall
+    | arrayCall;
 
-funCall: ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR ;
-arrayCall: ID TKN_OPENING_BRA exprList TKN_CLOSING_BRA;
-MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
-ADOP: TKN_PLUS | TKN_MINUS;
-COMOP: TKN_PLUS | TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
-BOLOP: OP_Y | OP_O;
 
 literal
     : TKN_REAL
@@ -154,7 +158,7 @@ ARREGLO : A R R E G L O ;
 
 // Operators
 TKN_PLUS : '+' ;
-TKN_MINUS : '-' ;
+
 TKN_POWER : '^';
 TKN_TIMES : '*' ;
 TKN_DIV : '/' ;
