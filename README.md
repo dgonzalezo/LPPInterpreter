@@ -1,4 +1,7 @@
 # Intérprete de LPP
+Este proyecto es un interprente del lenguaje LPP que es un lenguaje para principantes, se usa el patorn de diseño visitors, con un codigdo generado a partir de una gramatica que usa la herramienta ANTLR.
+[LPP]([https://www.openai.com](https://mediatecnica.weebly.com/lpp.html))
+
 
 Realizado por:
 
