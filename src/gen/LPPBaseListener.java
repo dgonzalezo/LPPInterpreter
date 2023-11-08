@@ -1,4 +1,7 @@
-// Generated from C:/Users/xabel/IdeaProjects/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+// Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+
+     import java.util.Scanner;
+     
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -143,6 +146,18 @@ public class LPPBaseListener implements LPPListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIdList(LPPParser.IdListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdentifier(LPPParser.IdentifierContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdentifier(LPPParser.IdentifierContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -388,6 +403,30 @@ public class LPPBaseListener implements LPPListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterForBlock(LPPParser.ForBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitForBlock(LPPParser.ForBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterForAssign(LPPParser.ForAssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitForAssign(LPPParser.ForAssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRepeatStmt(LPPParser.RepeatStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -424,18 +463,6 @@ public class LPPBaseListener implements LPPListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpr(LPPParser.ExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpr(LPPParser.ExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterFunCall(LPPParser.FunCallContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -455,6 +482,18 @@ public class LPPBaseListener implements LPPListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArrayCall(LPPParser.ArrayCallContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr(LPPParser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr(LPPParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

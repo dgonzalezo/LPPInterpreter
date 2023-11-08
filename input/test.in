@@ -1,0 +1,13 @@
+entero contador
+
+inicio
+    contador <- -5
+
+    mientras contador < 10 haga
+        escriba "Contador aun no es igual a 10!, contador es ", contador, "!"
+        llamar nueva_linea
+        contador <- contador + 1
+    fin mientras
+
+    ESCRIBA "Contador ahora si vale ", contador
+fin

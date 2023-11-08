@@ -1,5 +1,12 @@
 /** Gramatica del Lenguaje LPP en ENBNF para ser procesado por ANTLR4 */
 grammar LPP;
+@header{
+     import java.util.Scanner;
+     }
+
+@members {
+    Scanner io = new Scanner(System.in);
+}
 
 program:  registerDeclarations varDeclarations funProcDeclarations principalBlock;
 
@@ -21,7 +28,8 @@ varDeclarations: varDeclaration*;
 
 varDeclaration: varType idList ;
 
-idList: ID ( ',' ID )*;
+idList: identifier ( ',' identifier )*;
+identifier: ID;
 
 varType
     : ENTERO
@@ -34,7 +42,7 @@ varType
 
 integerList: TKN_INTEGER ( ',' TKN_INTEGER )*;
 
-funcStmts: stmts | returnStmt;
+funcStmts: stmts;
 
 principalBlock: INICIO  stmts FIN  EOF;
 
@@ -49,7 +57,8 @@ stmt
     | caseStmt
     | whileStmt
     | forStmt
-    | repeatStmt;
+    | repeatStmt
+    | returnStmt;
 
 printStmt: ESCRIBA exprList ;
 
@@ -59,9 +68,9 @@ assignStmt: expr TKN_ASSIGN expr;
 
 callStmt
      : LLAMAR NUEVA_LINEA ( '(' exprList? ')' )?
-     | LLAMAR ID ( '(' exprList? ')' )? ;
+     | LLAMAR funCall ;
 
-ifStmt: SI expr  ENTONCES  stmts ifNot? FIN SI;
+ifStmt: SI expr  ENTONCES  stmts (SINO stmts)? FIN SI;
 
 ifNot: SINO  stmts;
 
@@ -79,14 +88,23 @@ ifNotCase: SINO ':'  stmts;
 
 whileStmt: MIENTRAS expr  HAGA stmts FIN MIENTRAS;
 
-forStmt: PARA ID '<-' expr HASTA expr HAGA stmts FIN PARA;
-
+forStmt: PARA forAssign  HASTA expr forBlock;
+forBlock: HAGA stmts FIN PARA;
+forAssign:  ID '<-' expr;
 repeatStmt: REPITA  stmts HASTA expr;
 
 returnStmt: RETORNE expr;
 
 exprList: expr ( ',' expr )*;
 
+TKN_MINUS : '-' ;
+
+funCall: ID (TKN_OPENING_PAR exprList? TKN_CLOSING_PAR)? ;
+arrayCall: ID (TKN_OPENING_BRA exprList TKN_CLOSING_BRA)+;
+MULOP : TKN_TIMES | TKN_DIV | DIV | MOD | TKN_POWER;
+
+COMOP: TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
+BOLOP: OP_Y | OP_O;
 
 expr
     : literal
@@ -94,20 +112,13 @@ expr
     | ID
     | TKN_OPENING_PAR expr TKN_CLOSING_PAR
     | expr TKN_PERIOD ID
-    | funCall
-    | arrayCall
-    | <assoc=right> expr TKN_POWER expr
     | expr ( MULOP ) expr
-    | expr ( ADOP ) expr
+    | lEx=expr op=( TKN_PLUS | TKN_MINUS ) rEx=expr
     | expr ( COMOP ) expr
-    | expr ( BOLOP ) expr;
+    | expr ( BOLOP ) expr
+    | funCall
+    | arrayCall;
 
-funCall: ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR ;
-arrayCall: ID TKN_OPENING_BRA exprList TKN_CLOSING_BRA;
-MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
-ADOP: TKN_PLUS | TKN_MINUS;
-COMOP: TKN_PLUS | TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
-BOLOP: OP_Y | OP_O;
 
 literal
     : TKN_REAL
@@ -154,7 +165,7 @@ ARREGLO : A R R E G L O ;
 
 // Operators
 TKN_PLUS : '+' ;
-TKN_MINUS : '-' ;
+
 TKN_POWER : '^';
 TKN_TIMES : '*' ;
 TKN_DIV : '/' ;

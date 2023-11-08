@@ -1,4 +1,7 @@
-// Generated from C:/Users/xabel/IdeaProjects/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+// Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+
+     import java.util.Scanner;
+     
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -75,6 +78,12 @@ public interface LPPVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIdList(LPPParser.IdListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPPParser#identifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier(LPPParser.IdentifierContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LPPParser#varType}.
 	 * @param ctx the parse tree
@@ -196,6 +205,18 @@ public interface LPPVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitForStmt(LPPParser.ForStmtContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LPPParser#forBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForBlock(LPPParser.ForBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPPParser#forAssign}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForAssign(LPPParser.ForAssignContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LPPParser#repeatStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -214,12 +235,6 @@ public interface LPPVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExprList(LPPParser.ExprListContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LPPParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpr(LPPParser.ExprContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link LPPParser#funCall}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -231,6 +246,12 @@ public interface LPPVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArrayCall(LPPParser.ArrayCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPPParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpr(LPPParser.ExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LPPParser#literal}.
 	 * @param ctx the parse tree
