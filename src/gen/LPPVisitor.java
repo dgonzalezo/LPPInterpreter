@@ -1,4 +1,7 @@
 // Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+
+     import java.util.Scanner;
+     
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -201,6 +204,18 @@ public interface LPPVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitForStmt(LPPParser.ForStmtContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPPParser#forBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForBlock(LPPParser.ForBlockContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LPPParser#forAssign}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForAssign(LPPParser.ForAssignContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LPPParser#repeatStmt}.
 	 * @param ctx the parse tree

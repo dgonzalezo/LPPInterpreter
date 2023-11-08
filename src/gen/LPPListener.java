@@ -1,4 +1,7 @@
 // Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+
+     import java.util.Scanner;
+     
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -326,6 +329,26 @@ public interface LPPListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitForStmt(LPPParser.ForStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPPParser#forBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterForBlock(LPPParser.ForBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPPParser#forBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitForBlock(LPPParser.ForBlockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LPPParser#forAssign}.
+	 * @param ctx the parse tree
+	 */
+	void enterForAssign(LPPParser.ForAssignContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LPPParser#forAssign}.
+	 * @param ctx the parse tree
+	 */
+	void exitForAssign(LPPParser.ForAssignContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LPPParser#repeatStmt}.
 	 * @param ctx the parse tree

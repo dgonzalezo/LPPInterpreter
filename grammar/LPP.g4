@@ -1,5 +1,12 @@
 /** Gramatica del Lenguaje LPP en ENBNF para ser procesado por ANTLR4 */
 grammar LPP;
+@header{
+     import java.util.Scanner;
+     }
+
+@members {
+    Scanner io = new Scanner(System.in);
+}
 
 program:  registerDeclarations varDeclarations funProcDeclarations principalBlock;
 
@@ -61,9 +68,9 @@ assignStmt: expr TKN_ASSIGN expr;
 
 callStmt
      : LLAMAR NUEVA_LINEA ( '(' exprList? ')' )?
-     | LLAMAR ID ( '(' exprList? ')' )? ;
+     | LLAMAR funCall ;
 
-ifStmt: SI expr  ENTONCES  stmts ifNot? FIN SI;
+ifStmt: SI expr  ENTONCES  stmts (SINO stmts)? FIN SI;
 
 ifNot: SINO  stmts;
 
@@ -81,8 +88,9 @@ ifNotCase: SINO ':'  stmts;
 
 whileStmt: MIENTRAS expr  HAGA stmts FIN MIENTRAS;
 
-forStmt: PARA ID '<-' expr HASTA expr HAGA stmts FIN PARA;
-
+forStmt: PARA forAssign  HASTA expr forBlock;
+forBlock: HAGA stmts FIN PARA;
+forAssign:  ID '<-' expr;
 repeatStmt: REPITA  stmts HASTA expr;
 
 returnStmt: RETORNE expr;
@@ -91,9 +99,9 @@ exprList: expr ( ',' expr )*;
 
 TKN_MINUS : '-' ;
 
-funCall: ID TKN_OPENING_PAR exprList? TKN_CLOSING_PAR ;
-arrayCall: ID TKN_OPENING_BRA exprList TKN_CLOSING_BRA;
-MULOP : TKN_TIMES | TKN_DIV | DIV | MOD;
+funCall: ID (TKN_OPENING_PAR exprList? TKN_CLOSING_PAR)? ;
+arrayCall: ID (TKN_OPENING_BRA exprList TKN_CLOSING_BRA)+;
+MULOP : TKN_TIMES | TKN_DIV | DIV | MOD | TKN_POWER;
 
 COMOP: TKN_NEQ | TKN_LESS | TKN_GREATER | TKN_LEQ | TKN_GEQ | TKN_EQUAL;
 BOLOP: OP_Y | OP_O;
@@ -104,7 +112,6 @@ expr
     | ID
     | TKN_OPENING_PAR expr TKN_CLOSING_PAR
     | expr TKN_PERIOD ID
-    | <assoc=right> expr TKN_POWER expr
     | expr ( MULOP ) expr
     | lEx=expr op=( TKN_PLUS | TKN_MINUS ) rEx=expr
     | expr ( COMOP ) expr

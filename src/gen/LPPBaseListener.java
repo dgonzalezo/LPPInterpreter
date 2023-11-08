@@ -1,5 +1,8 @@
 // Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
 
+     import java.util.Scanner;
+     
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -395,6 +398,30 @@ public class LPPBaseListener implements LPPListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitForStmt(LPPParser.ForStmtContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterForBlock(LPPParser.ForBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitForBlock(LPPParser.ForBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterForAssign(LPPParser.ForAssignContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitForAssign(LPPParser.ForAssignContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

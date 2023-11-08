@@ -1,27 +1,20 @@
 import org.antlr.v4.runtime.misc.Pair;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-
-import java.util.Objects;
-import java.util.Scanner;
+import javax.swing.*;
+import java.util.*;
 
 public class MyVisitor extends LPPBaseVisitor<Value> {
-
-    // We encapsulate the dictionary NameOfVariable: (Type, value)
-    HashMap<String, Value> varTable = new HashMap<>();
-    HashMap<String, ArrayList<Pair<String, String>>> registerTable = new HashMap<>();
-
-
-    class FunctionInfo {
-        String returnType;
-        ArrayList<Pair<String, String>> parameters;
-        LPPParser.FuncStmtsContext stmts;
-
-    }
-
+    Scanner io = new Scanner(System.in);
+    private HashMap<String, Value> globalMem = new HashMap<String, Value>();
+    private Stack<HashMap<String, Value>> scopes = new Stack<HashMap<String, Value>>();
     HashMap<String, LPPParser.FuncDeclarationContext> functionTable = new HashMap<String, LPPParser.FuncDeclarationContext>();
+    HashMap<String, LPPParser.ProcDeclarationContext> procTable = new HashMap<String, LPPParser.ProcDeclarationContext>();
 
+    @Override
+    public Value visitProgram(LPPParser.ProgramContext ctx) {
+        scopes.push(globalMem);
+        return visitChildren(ctx);
+    }
 
     // Register related visitors.
 
@@ -63,12 +56,18 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
 
     @Override
     public Value visitFuncDeclaration(LPPParser.FuncDeclarationContext ctx) {
-        String funcName = ctx.ID().getText();
+        String funcName = ctx.ID().getText().toLowerCase();
         functionTable.put(funcName, ctx);
         return Value.VOID;
     }
 
-//    public Value visitParameters(LPPParser.ParametersContext ctx){
+    @Override
+    public Value visitProcDeclaration(LPPParser.ProcDeclarationContext ctx) {
+        String funcName = ctx.ID().getText().toLowerCase();
+        procTable.put(funcName, ctx);
+        return Value.VOID;
+    }
+    //    public Value visitParameters(LPPParser.ParametersContext ctx){
 //        ArrayList<Pair<String, String>> parameterList = new ArrayList<>();
 //        if (ctx.parameter()!=null){
 //            for(int i =0; i<ctx.parameter().size(); i++){
@@ -100,6 +99,10 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
             return visitWhileStmt(ctx.whileStmt());
         } else if (ctx.callStmt() != null) {
             return visitCallStmt(ctx.callStmt());
+        } else if (ctx.readStmt() != null) {
+            return visitReadStmt(ctx.readStmt());
+        } else if (ctx.returnStmt() != null) {
+            return visitReturnStmt(ctx.returnStmt());
         }
         return Value.VOID;
     }
@@ -110,7 +113,11 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
         Boolean booleanValue = booleanString.asBooleano();
 
         if (booleanValue) {
-            visitStmts(ctx.stmts());
+            visitStmts(ctx.stmts(0));
+        } else {
+            if (ctx.SINO() != null) {
+                visitStmts(ctx.stmts(1));
+            }
         }
 
         return Value.VOID;
@@ -129,13 +136,13 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
 
     @Override
     public Value visitAssignStmt(LPPParser.AssignStmtContext ctx) {
-        String variableName = ctx.expr(0).ID().getText();
+        String variableName = ctx.expr(0).ID().getText().toLowerCase();
         Value value = visitExpr(ctx.expr(1));
 
-        if (varTable.get(variableName) == null) {
+        if (scopes.peek().get(variableName) == null) {
             System.out.println(variableName + " ERROR: no ha si declarada!!!!111");
         } else {
-            varTable.put(variableName, value);
+            scopes.peek().put(variableName, value);
             //System.out.printf("Se asigno %s a variable %s\n", varTable.get(variableName), variableName);
         }
 
@@ -146,57 +153,64 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
     @Override
     public Value visitReadStmt(LPPParser.ReadStmtContext ctx) {
 
-        // The expression list must be a list of variables
-        // The read Stmt assign a value to some variable, array, etc.
-        // So we probably just need to read the value, and visit the assign with some contedxt idk
+        for (int i = 0; i < ctx.exprList().expr().size(); i++) {
+            String id = ctx.exprList().expr(i).getText();
+            Value value = new Value(io.nextLine());
 
+            scopes.peek().put(id, value);
+        }
 
-        // For that we get the list of variables to read first
-
-        String exprList = ctx.exprList().expr(0).getText();
-        Scanner scanner = new Scanner(System.in);
-        Value value = new Value(scanner.nextLine());
-
-        scanner.close();
-
-        return null;
+        return Value.VOID;
     }
 
     @Override
     public Value visitCallStmt(LPPParser.CallStmtContext ctx) {
         if (ctx.NUEVA_LINEA() != null) {
             System.out.println("");
+        } else {
+            visitFunCall(ctx.funCall());
         }
         return Value.VOID;
     }
 
     @Override
     public Value visitRepeatStmt(LPPParser.RepeatStmtContext ctx) {
+        CreateNewScope();
         do {
             visitStmts(ctx.stmts());
         }
         while (!(visitExpr(ctx.expr())).asBooleano());
-
+        AdjustScope();
         return Value.VOID;
 
     }
 
-    public Value visitForStmt(LPPParser.ForStmtContext ctx) {
-        String identifier = (String) ctx.ID().getText();
-        Value initial_value = visitExpr(ctx.expr(0));
-        Value limit = visitExpr(ctx.expr(1));
+    @Override
+    public Value visitForAssign(LPPParser.ForAssignContext ctx) {
+        String id = ctx.ID().getText().toLowerCase();
+        Value value = this.visit(ctx.expr());
+        scopes.peek().put(id, value);
+        return value;
+    }
 
-        if (varTable.get(identifier) == null) {
+    public Value visitForStmt(LPPParser.ForStmtContext ctx) {
+        CreateNewScope();
+        String identifier = (String) ctx.forAssign().ID().getText().toLowerCase();
+        Value initial_value = visitExpr(ctx.forAssign().expr());
+        Value limit = visitExpr(ctx.expr());
+
+        if (scopes.peek().get(identifier) == null) {
             System.out.println("Error, debe ser declarada");
             return null;
         }
-        varTable.put(identifier, initial_value);
+        scopes.peek().put(identifier, initial_value);
 
-        for (int i = initial_value.asEntero(); i < limit.asEntero(); i++) {
+        for (int i = initial_value.asEntero(); i <= limit.asEntero(); i++) {
             initial_value = new Value(initial_value.asEntero() + 1);
-            visitStmts(ctx.stmts());
-            varTable.put(identifier, initial_value);
+            visitStmts(ctx.forBlock().stmts());
+            scopes.peek().put(identifier, initial_value);
         }
+        AdjustScope();
         return Value.VOID;
     }
 
@@ -222,19 +236,26 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
         for (int i = 0; i < ctx.varDeclaration().size(); i++) {
             String varType = ctx.varDeclaration(i).varType().getText().toLowerCase();
             ArrayList<LPPParser.IdentifierContext> ids = (ArrayList<LPPParser.IdentifierContext>) ctx.varDeclaration(i).idList().identifier();
+
             // Ooriginalmente pensaba hacer un switch, pero es un lio el tema de cadenas y arreglos
             for (LPPParser.IdentifierContext variable : ids) {
                 if (varType.equals("entero")) {
-                    varTable.put(variable.getText(), new Value(0));
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(0));
                 } else if (varType.startsWith("real")) {
-                    varTable.put(variable.getText(), new Value(0.0));
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(0.0));
                 } else if (varType.startsWith("cadena")) {
                     //Quizas toque hacer que la cadena no sea mayor a un tamano...
-                    varTable.put(variable.getText(), new Value(""));
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(""));
+                } else if (varType.startsWith("arreglo")) {
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(new ArrayList<>()));
+                } else if (varType.equals("booleano")) {
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(false));
+                } else if (varType.equals("caracter")) {
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(""));
                 }
                 //If its a register then
                 else {
-                    varTable.put(variable.getText(), new Value(null));
+                    scopes.peek().put(variable.getText().toLowerCase(), new Value(null));
                 }
             }
 
@@ -249,6 +270,9 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
             return value;
         } else if (ctx.TKN_STR() != null) {
             Value value = new Value(ctx.TKN_STR().getText().replaceAll("\"", ""));
+            return value;
+        } else if (ctx.TKN_CHAR() != null) {
+            Value value = new Value(ctx.TKN_CHAR().getText().replaceAll("'", ""));
             return value;
         } else if (ctx.TKN_REAL() != null) {
             Value value = new Value(Double.parseDouble(ctx.TKN_REAL().getText()));
@@ -267,14 +291,14 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
 
         if (ctx.funCall() != null) {
             return visitFunCall(ctx.funCall());
-        } else if (ctx.TKN_MINUS() != null) {
-            Value value = new Value(visitExpr(ctx.expr(0)).value);
+        } else if (ctx.TKN_MINUS() != null && ctx.lEx == null) {
+            Value value = (visitExpr(ctx.expr(0)));
             if (value.isReal()) {
                 return new Value(value.asReal() * -1);
             } else if (value.isEntero()) {
                 return new Value(value.asEntero() * -1);
             } else {
-                return value;
+                return new Value(value.asEntero() * -1);
             }
         } else if (ctx.literal() != null) {
             return visitLiteral(ctx.literal());
@@ -282,8 +306,8 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
             return visitExpr(ctx.expr(0));
         } else if (ctx.ID() != null) {
 
-            String id = ctx.ID().getText();
-            Value value = varTable.get(id);
+            String id = ctx.ID().getText().toLowerCase();
+            Value value = scopes.peek().get(id);
             return value;
 
         } else if (ctx.MULOP() != null) {
@@ -311,9 +335,12 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
                 case "div":
                     ans = num1.intValue() / num2.intValue();
                     break;
+                case "^":
+                    ans = Math.pow(num1.floatValue(), num2.floatValue());
+                    break;
             }
 
-            if (value1.isEntero() &&  value2.isEntero()) {
+            if (value1.isEntero() && value2.isEntero()) {
                 ans = ans.intValue();
             }
             ansValue = new Value(ans);
@@ -323,23 +350,30 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
             String op = ctx.TKN_PLUS() != null ? ctx.TKN_PLUS().toString() : ctx.TKN_MINUS().toString();
             Value value1 = visitExpr(ctx.lEx);
             Value value2 = visitExpr(ctx.rEx);
-
-            Number num1 = value1.asReal();
-            Number num2 = value2.asReal();
+            Number num1 = 0,num2 = 0;
+            if (!(value1.isCadena() || value2.isCadena())) {
+                 num1 = value1.asReal();
+                 num2 = value2.asReal();
+            }
 
             Number ans = null;
             Value ansValue;
 
             switch (op) {
                 case "+":
-                    ans = num1.doubleValue() + num2.doubleValue();
+                    if (value1.isCadena() || value2.isCadena()) {
+                        ansValue = new Value(value1.asCadena() + value2.asCadena());
+                        return ansValue;
+                    } else {
+                        ans = num1.doubleValue() + num2.doubleValue();
+                    }
                     break;
                 case "-":
                     ans = num1.doubleValue() - num2.doubleValue();
                     break;
             }
 
-            if (value1.isEntero() &&  value2.isEntero()) {
+            if (value1.isEntero() && value2.isEntero()) {
                 ans = ans.intValue();
             }
             ansValue = new Value(ans);
@@ -361,7 +395,7 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
                     ans = Objects.equals(num1, num2);
                     break;
                 case "<":
-                    ans = num1 < num2 ;
+                    ans = num1 < num2;
                     break;
                 case ">":
                     ans = num1 > num2;
@@ -400,37 +434,72 @@ public class MyVisitor extends LPPBaseVisitor<Value> {
     }
 
     @Override
-    public Value visitFunCall(LPPParser.FunCallContext ctx) {
-        String functionName = ctx.ID().getText();
-        LPPParser.FuncDeclarationContext functionContext = functionTable.get(functionName);
-        System.out.println(functionContext.getText());
-        if (functionTable.containsKey(functionName)) {
-            System.out.println(ctx);
-        }
-//        if (functionTable.containsKey(functionName)) {
-//            FunctionInfo functionInfo = functionTable.get(functionName);
-//
-//            // Create a new local scope for function parameters
-//            HashMap<String, Object> localScope = new HashMap<>();
-//            ArrayList<Pair<String, String>> parameters = functionInfo.parameters;
-//
-//            if (ctx.exprList() != null) {
-//                for (int i = 0; i < parameters.size() && i < ctx.exprList().expr().size(); i++) {
-//                    String paramName = parameters.get(i).b;
-//                    Object argValue = visitExpr(ctx.exprList().expr(i));
-//                    localScope.put(paramName, argValue);
-//                }
-//            }
-//
-//            // Execute the function's statement block in the new scope
-//            MyVisitor<T> functionVisitor = new MyVisitor<>();
-//            functionVisitor.varTable = localScope; // Set local scope
-//            functionVisitor.visitFuncStmts(functionInfo.stmts);
-//        } else {
-//            System.out.println("Error: Function " + functionName + " not defined.");
-//        }
+    public Value visitReturnStmt(LPPParser.ReturnStmtContext ctx) {
+        scopes.peek().put("return", visitExpr(ctx.expr()));
+        return visitExpr(ctx.expr());
+    }
 
+    @Override
+    public Value visitFunCall(LPPParser.FunCallContext ctx) {
+        if (functionTable.containsKey(ctx.ID().getText().toLowerCase())) {
+            CreateNewScope();
+            String functionName = ctx.ID().getText().toLowerCase();
+            LPPParser.FuncDeclarationContext functionContext = functionTable.get(functionName);
+            if (ctx.exprList() != null) {
+                List<LPPParser.ExprContext> arguments = ctx.exprList().expr();
+                List<LPPParser.ParameterContext> attributes = functionContext.parameters().parameter();
+                int counter = 0;
+                for (LPPParser.ParameterContext attri : attributes) {
+                    String id = attri.ID().getText();
+                    Value val = this.visit(arguments.get(counter));
+                    scopes.peek().put(id, val);
+                    counter++;
+                }
+            }
+            this.visitChildren(functionContext);
+            Value returnVal = scopes.peek().get("return");
+            AdjustScope();
+            return returnVal;
+        } else if (procTable.containsKey(ctx.ID().getText().toLowerCase())) {
+            CreateNewScope();
+            String procName = ctx.ID().getText().toLowerCase();
+            LPPParser.ProcDeclarationContext procContext = procTable.get(procName);
+            if (ctx.exprList() != null) {
+                List<LPPParser.ExprContext> arguments = ctx.exprList().expr();
+                List<LPPParser.ParameterContext> attributes = procContext.parameters().parameter();
+                int counter = 0;
+                if (arguments.size() > 0) {
+                    for (LPPParser.ParameterContext attri : attributes) {
+                        String id = attri.ID().getText();
+                        Value val = this.visit(arguments.get(counter));
+                        scopes.peek().put(id, val);
+                        counter++;
+                    }
+                }
+            }
+            this.visitChildren(procContext);
+            AdjustScope();
+        }
         return Value.VOID;
+    }
+
+    //HELPER METHODs that adjusts scope at the end of a block
+    private void CreateNewScope() {
+        HashMap<String, Value> newScope = new HashMap<String, Value>();
+        newScope.putAll(scopes.peek());
+        scopes.push(newScope);
+    }
+
+
+    private void AdjustScope() {
+        HashMap<String, Value> currScope = scopes.pop();
+        HashMap<String, Value> oldScope = scopes.peek();
+        for (Map.Entry<String, Value> entry : oldScope.entrySet()) {
+            if (currScope.containsKey(entry.getKey())) {
+                Value val = currScope.get(entry.getKey());
+                oldScope.put(entry.getKey(), val);
+            }
+        }
     }
 
 

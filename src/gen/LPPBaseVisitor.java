@@ -1,4 +1,7 @@
 // Generated from /Users/eliangonzalez/Documents/Semestres/2023-02/Lenguajes/LPPInterpreter/grammar/LPP.g4 by ANTLR 4.13.1
+
+     import java.util.Scanner;
+     
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -235,6 +238,20 @@ public class LPPBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements LP
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitForStmt(LPPParser.ForStmtContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitForBlock(LPPParser.ForBlockContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitForAssign(LPPParser.ForAssignContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
